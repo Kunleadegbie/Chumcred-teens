@@ -4,7 +4,8 @@ import streamlit as st
 from openai import OpenAI
 
 # Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+import os
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 def teen_ai(prompt, mode="learn", extra=""):
