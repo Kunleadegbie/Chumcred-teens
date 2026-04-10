@@ -44,6 +44,7 @@ def render_sidebar(role=None):
 
         if email == "chumcred@gmail.com" or role == "super_admin":
             st.page_link("pages/10_Admin_Payments.py", label="⚙️ Admin Payments")
+            st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
 
         st.markdown("---")
 
