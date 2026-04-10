@@ -5,6 +5,7 @@ from core.credits import get_cost
 from core.credit_engine import can_use, consume_credits
 from workflow.sidebar_menu import render_sidebar
 
+
 from openai import OpenAI
 import tempfile
 
@@ -27,7 +28,13 @@ render_sidebar(role)
 
 st.title("🧠 Learn Anything")
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+from openai import OpenAI
+import streamlit as st
+import os
+
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key) if api_key else None
+
 
 
 def speak_text_native(text):
