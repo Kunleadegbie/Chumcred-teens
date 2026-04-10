@@ -121,7 +121,7 @@ with st.sidebar:
         st.page_link("pages/10_Admin_Payments.py", label="⚙️ Admin Payments")
 
     if (st.session_state.user.get("email") or "").strip().lower() == "chumcred@gmail.com":
-    st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
+        st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
 
     st.markdown("---")
 
