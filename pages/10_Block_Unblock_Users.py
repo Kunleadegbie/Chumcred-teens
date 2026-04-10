@@ -8,7 +8,6 @@ from core.block_access import (
     parse_date,
 )
 
-
 st.set_page_config(
     page_title="Block / Unblock Users",
     page_icon="🚫",
@@ -43,6 +42,33 @@ if current_email != ADMIN_EMAIL.lower():
     st.stop()
 
 ensure_user_row(current_user)
+
+# ===============================
+# SIDEBAR
+# ===============================
+with st.sidebar:
+    st.markdown("## Chumcred Teens")
+    st.caption(st.session_state.user.get("name", "Admin"))
+
+    st.page_link("pages/1_Home.py", label="🏠 Home")
+    st.page_link("pages/2_Skill_Discovery.py", label="🎯 Skill Discovery")
+    st.page_link("pages/3_AI_Assistant.py", label="🤖 AI Assistant")
+    st.page_link("pages/4_Projects.py", label="🛠 Projects")
+    st.page_link("pages/5_Learn_Anything.py", label="🌍 Learn Anything")
+    st.page_link("pages/7_Community.py", label="🌍 Community")
+    st.page_link("pages/8_AI_Coach.py", label="🧠 AI Coach")
+    st.page_link("pages/9_Daily_Missions.py", label="🎯 Daily Missions")
+    st.page_link("pages/9_Subscription.py", label="💳 Subscription")
+    st.page_link("pages/10_Admin_Payments.py", label="⚙️ Admin Payments")
+    st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
+
+    st.markdown("---")
+
+    if st.button("Logout", use_container_width=True):
+        st.session_state.user = None
+        st.session_state.onboarded = False
+        st.session_state.just_logged_in = False
+        st.switch_page("app.py")
 
 st.title("🚫 Block / Unblock Teens")
 st.caption(f"Admin: {current_email}")
