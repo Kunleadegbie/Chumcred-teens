@@ -35,7 +35,6 @@ def render_sidebar(role=None):
         st.page_link("pages/7_Community.py", label="🌍 Community")
         st.page_link("pages/8_AI_Coach.py", label="🧠 AI Coach")
         st.page_link("pages/9_Daily_Missions.py", label="🎯 Daily Missions")
-        st.page_link("pages/9_Subscription.py", label="💳 Subscription")
 
         # Hidden for MVP for now:
         # pages/5_Progress.py
@@ -43,6 +42,7 @@ def render_sidebar(role=None):
         # pages/10_Reward_Store.py
 
         if email == "chumcred@gmail.com" or role == "super_admin":
+            st.page_link("pages/9_Subscription.py", label="💳 Subscription")
             st.page_link("pages/10_Admin_Payments.py", label="⚙️ Admin Payments")
             st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
 

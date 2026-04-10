@@ -110,7 +110,6 @@ with st.sidebar:
     st.page_link("pages/7_Community.py", label="🌍 Community")
     st.page_link("pages/8_AI_Coach.py", label="🧠 AI Coach")
     st.page_link("pages/9_Daily_Missions.py", label="🎯 Daily Missions")
-    st.page_link("pages/9_Subscription.py", label="💳 Subscription")
 
     # Hidden for MVP:
     # - pages/5_Progress.py
@@ -118,6 +117,7 @@ with st.sidebar:
     # - pages/10_Reward_Store.py
 
     if (st.session_state.user.get("email") or "").strip().lower() == "chumcred@gmail.com":
+        st.page_link("pages/9_Subscription.py", label="💳 Subscription")
         st.page_link("pages/10_Admin_Payments.py", label="⚙️ Admin Payments")
         st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
 
