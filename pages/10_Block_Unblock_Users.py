@@ -8,8 +8,6 @@ from core.block_access import (
     parse_date,
 )
 
-role = st.session_state.get("user", {}).get("role", "student")
-render_sidebar(role)
 
 st.set_page_config(
     page_title="Block / Unblock Users",
