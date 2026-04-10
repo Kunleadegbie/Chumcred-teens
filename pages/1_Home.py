@@ -107,7 +107,7 @@ with st.sidebar:
     st.page_link("pages/3_AI_Assistant.py", label="🤖 AI Assistant")
     st.page_link("pages/4_Projects.py", label="🛠 Projects")
     st.page_link("pages/5_Learn_Anything.py", label="🌍 Learn Anything")
-    st.page_link("pages/7_Community.py", label="🌍 Community")
+    # st.page_link("pages/7_Community.py", label="🌍 Community")
     st.page_link("pages/8_AI_Coach.py", label="🧠 AI Coach")
     st.page_link("pages/9_Daily_Missions.py", label="🎯 Daily Missions")
 
