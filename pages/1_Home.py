@@ -10,6 +10,7 @@ from core.gamification import add_xp, init_gamification, reset_daily
 from core.db import save_progress, update_leaderboard
 from core.daily_missions import get_daily_mission
 from core.ai_engine import generate_daily_coach
+from core.block_access import ensure_user_row, enforce_block_access
 
 st.set_page_config(
     page_title="Chumcred Teens | Home",
@@ -26,6 +27,11 @@ st.markdown("""
 
 init_session()
 init_gamification()
+
+if st.session_state.get("user"):
+    ensure_user_row(st.session_state.user)
+    enforce_block_access()
+
 update_streak()
 reset_daily()
 
@@ -113,6 +119,9 @@ with st.sidebar:
 
     if (st.session_state.user.get("email") or "").strip().lower() == "chumcred@gmail.com":
         st.page_link("pages/10_Admin_Payments.py", label="⚙️ Admin Payments")
+
+    if (st.session_state.user.get("email") or "").strip().lower() == "chumcred@gmail.com":
+    st.page_link("pages/10_Block_Unblock_Users.py", label="🚫 Block / Unblock Users")
 
     st.markdown("---")
 

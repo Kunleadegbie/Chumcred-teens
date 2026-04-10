@@ -3,6 +3,7 @@ from auth.login import login_page
 from auth.signup import signup_page
 from core.session import init_session
 from core.user_profile import get_user_profile
+from core.block_access import ensure_user_row, enforce_block_access
 
 st.set_page_config(
     page_title="Chumcred Teens",
@@ -11,6 +12,10 @@ st.set_page_config(
 )
 
 init_session()
+
+if st.session_state.get("user"):
+    ensure_user_row(st.session_state.user)
+    enforce_block_access()
 
 if "user" not in st.session_state:
     st.session_state.user = None
