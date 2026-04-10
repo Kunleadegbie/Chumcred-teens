@@ -5,7 +5,7 @@ ADMIN_EMAIL = "chumcred@gmail.com"
 
 
 def login_page():
-    st.subheader("Welcome Back")
+    st.subheader("Welcome To Chumcred Teens App")
 
     email = st.text_input("Email Address", key="login_email").strip().lower()
     password = st.text_input("Password", type="password", key="login_password").strip()
