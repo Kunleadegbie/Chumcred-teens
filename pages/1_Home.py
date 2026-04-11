@@ -9,8 +9,61 @@ from core.user_profile import get_user_profile, sync_profile_from_session
 from core.gamification import add_xp, init_gamification, reset_daily
 from core.db import save_progress, update_leaderboard
 from core.daily_missions import get_daily_mission
+from db.supabase_client import supabase
 from core.ai_engine import generate_daily_coach
 from core.block_access import ensure_user_row, enforce_block_access
+
+
+def load_trial_status(user_id: str):
+    if not user_id:
+        return None
+
+    try:
+        resp = (
+            supabase.table("users")
+            .select("payment_status,is_blocked,trial_start_date,trial_end_date")
+            .eq("id", user_id)
+            .limit(1)
+            .execute()
+        )
+        rows = resp.data or []
+        if not rows:
+            return None
+        return rows[0]
+    except Exception:
+        return None
+
+
+def show_trial_notification(user_id: str):
+    trial_row = load_trial_status(user_id)
+    if not trial_row:
+        return
+
+    payment_status = str(trial_row.get("payment_status") or "trial").strip().lower()
+    is_blocked = bool(trial_row.get("is_blocked"))
+    trial_end = trial_row.get("trial_end_date")
+
+    if payment_status == "paid" or is_blocked or not trial_end:
+        return
+
+    try:
+        end_date = datetime.fromisoformat(str(trial_end)).date()
+    except Exception:
+        return
+
+    today = datetime.today().date()
+    days_left = (end_date - today).days
+
+    if days_left < 0:
+        st.error("⛔ Your free trial has expired. Please make payment to continue using Chumcred Teens.")
+    elif days_left == 0:
+        st.warning("⏳ Your free trial expires today. Please make payment to avoid interruption.")
+    elif days_left == 1:
+        st.warning("⏳ Your free trial expires in 1 day. Please make payment to continue learning without interruption.")
+    elif days_left <= 3:
+        st.warning(f"⏳ Your free trial expires in {days_left} days. Please plan to make payment soon.")
+    elif days_left <= 7:
+        st.info(f"📅 Your free trial expires in {days_left} days. Enjoy your learning and get ready to continue after trial.")
 
 st.set_page_config(
     page_title="Chumcred Teens | Home",
@@ -72,6 +125,9 @@ if not all(st.session_state.user.get(k) not in [None, ""] for k in required_prof
     st.stop()
 
 st.session_state.onboarded = True
+
+if st.session_state.user.get("id"):
+    show_trial_notification(st.session_state.user.get("id"))
 
 if "coach_message" not in st.session_state:
     st.session_state.coach_message = ""
