@@ -288,12 +288,12 @@ with col2:
     if st.button("🎯 Daily Missions", use_container_width=True):
         st.switch_page("pages/9_Daily_Missions.py")
 
-st.markdown("### 🏅 Badges")
+# st.markdown("### 🏅 Badges")
 
-if st.session_state.badges:
-    st.write(" ".join(st.session_state.badges))
-else:
-    st.write("No badges yet — start learning!")
+# if st.session_state.badges:
+    # st.write(" ".join(st.session_state.badges))
+# else:
+    # st.write("No badges yet — start learning!")
 
 st.markdown("### 🔥 Why Chumcred Teens?")
 st.write("""
@@ -303,10 +303,10 @@ and become confident and future-ready.
 
 st.info("Use the quick action buttons above or the sidebar to explore the platform.")
 
-st.markdown("### 🎁 Invite Friends")
-st.info("Invite friends and earn bonus XP soon 🚀")
+# st.markdown("### 🎁 Invite Friends")
+# st.info("Invite friends and earn bonus XP soon 🚀")
 
-ref_code = st.session_state.user.get("referral_code", "N/A")
-st.code(ref_code, language="text")
+# ref_code = st.session_state.user.get("referral_code", "N/A")
+# st.code(ref_code, language="text")
 
-st.button("📋 Copy Invite Code", key="copy_ref")
+# st.button("📋 Copy Invite Code", key="copy_ref")
