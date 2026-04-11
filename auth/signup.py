@@ -14,6 +14,9 @@ def signup_page():
     if "last_signup_attempt" not in st.session_state:
         st.session_state.last_signup_attempt = 0.0
 
+    if "signup_success" not in st.session_state:
+        st.session_state.signup_success = False
+
     full_name = st.text_input("Full Name", key="signup_full_name").strip()
     email = st.text_input("Email Address", key="signup_email").strip().lower()
     password = st.text_input("Password", type="password", key="signup_password").strip()
@@ -34,6 +37,7 @@ def signup_page():
 
         st.session_state.last_signup_attempt = now
         st.session_state.signup_in_progress = True
+        st.session_state.signup_success = False
 
         try:
             if not full_name:
@@ -77,9 +81,29 @@ def signup_page():
             )
 
             if response.user:
-                st.success("Account created successfully. You can now continue.")
+                st.session_state.signup_success = True
+
+                st.success("✅ Account created successfully!")
+
+                st.info(
+                    "📩 Please check your email and click the confirmation link to activate your account.\n\n"
+                    "⚠️ Do NOT try to sign up again.\n"
+                    "After confirming your email, come back here and log in."
+                )
+
+                st.caption("If you don’t see the email, check your Spam or Promotions folder.")
             else:
-                st.success("Signup submitted successfully. Please try logging in.")
+                st.session_state.signup_success = True
+
+                st.success("✅ Signup submitted successfully!")
+
+                st.info(
+                    "📩 Please check your email and click the confirmation link to activate your account.\n\n"
+                    "⚠️ Do NOT try to sign up again.\n"
+                    "After confirming your email, come back here and log in."
+                )
+
+                st.caption("If you don’t see the email, check your Spam or Promotions folder.")
 
         except Exception as e:
             error_text = str(e).lower()
@@ -93,3 +117,31 @@ def signup_page():
 
         finally:
             st.session_state.signup_in_progress = False
+
+    if st.session_state.signup_success:
+        # ===============================
+        # RESEND CONFIRMATION EMAIL
+        # ===============================
+        st.markdown("---")
+        st.write("Didn't receive the email?")
+
+        if st.button("📩 Resend Confirmation Email", use_container_width=True):
+            if not email:
+                st.error("Please enter your email above first.")
+            else:
+                try:
+                    supabase.auth.resend(
+                        {
+                            "type": "signup",
+                            "email": email,
+                        }
+                    )
+                    st.success("Confirmation email sent again. Please check your inbox.")
+                    st.caption("Also check Spam or Promotions folder.")
+                except Exception as e:
+                    error_text = str(e).lower()
+
+                    if "rate limit" in error_text:
+                        st.error("Too many requests. Please wait a few minutes before trying again.")
+                    else:
+                        st.error(f"Could not resend email: {e}")
