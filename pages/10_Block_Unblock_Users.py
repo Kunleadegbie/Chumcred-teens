@@ -69,6 +69,7 @@ with st.sidebar:
 st.title("🚫 Block / Unblock Users")
 st.caption(f"Admin: {current_email}")
 
+
 def load_users():
     rows = (
         supabase.table("users")
@@ -83,6 +84,7 @@ def load_users():
         refreshed.append(auto_expire_trial(row, current_email) or row)
     return refreshed
 
+
 def block_user(user_id: str, reason: str):
     supabase.table("users").update({
         "is_blocked": True,
@@ -92,6 +94,7 @@ def block_user(user_id: str, reason: str):
         "blocked_by": current_email,
     }).eq("id", user_id).execute()
 
+
 def unblock_user(user_id: str):
     supabase.table("users").update({
         "is_blocked": False,
@@ -100,6 +103,7 @@ def unblock_user(user_id: str):
         "unblocked_at": datetime.utcnow().isoformat(),
         "unblocked_by": current_email,
     }).eq("id", user_id).execute()
+
 
 def reset_trial(user_id: str, days: int):
     start = date.today()
@@ -114,6 +118,7 @@ def reset_trial(user_id: str, days: int):
         "unblocked_by": current_email,
     }).eq("id", user_id).execute()
 
+
 def mark_paid(user_id: str):
     supabase.table("users").update({
         "is_blocked": False,
@@ -122,6 +127,7 @@ def mark_paid(user_id: str):
         "unblocked_at": datetime.utcnow().isoformat(),
         "unblocked_by": current_email,
     }).eq("id", user_id).execute()
+
 
 users = load_users()
 
@@ -171,60 +177,76 @@ else:
 
 st.markdown("### Manage Individual Users")
 
-for i, row in enumerate(filtered):
-    user_id = row.get("id")
-    email = row.get("email") or "No email"
-    name = row.get("name") or "No name"
-    age = row.get("age") or "N/A"
-    is_blocked = bool(row.get("is_blocked"))
-    payment_status = row.get("payment_status") or "trial"
-    trial_start = row.get("trial_start_date") or "N/A"
-    trial_end = row.get("trial_end_date") or "N/A"
-    block_reason = row.get("block_reason") or ""
+options = {}
+for row in filtered:
+    display_name = row.get("name") or "No name"
+    display_email = row.get("email") or "No email"
+    label = f"{display_name} — {display_email}"
+    if label in options:
+        label = f"{label} ({row.get('id')})"
+    options[label] = row
 
-    st.markdown('<div class="block-card">', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([3, 2, 2])
+selected_label = st.selectbox(
+    "Select user to manage",
+    list(options.keys()),
+    index=0
+)
 
-    with c1:
-        st.markdown(f"### {name}")
-        st.write(f"**Email:** {email}")
-        st.write(f"**Age:** {age}")
+selected_user = options[selected_label]
 
-    with c2:
-        st.write(f"**Blocked:** {'Yes' if is_blocked else 'No'}")
-        st.write(f"**Payment Status:** {payment_status}")
-        st.write(f"**Trial Start:** {trial_start}")
-        st.write(f"**Trial End:** {trial_end}")
+user_id = selected_user.get("id")
+email = selected_user.get("email") or "No email"
+name = selected_user.get("name") or "No name"
+age = selected_user.get("age") or "N/A"
+is_blocked = bool(selected_user.get("is_blocked"))
+payment_status = selected_user.get("payment_status") or "trial"
+trial_start = selected_user.get("trial_start_date") or "N/A"
+trial_end = selected_user.get("trial_end_date") or "N/A"
+block_reason = selected_user.get("block_reason") or ""
 
-    with c3:
-        reason = st.text_input("Reason", value=block_reason, key=f"reason_{i}")
+st.markdown('<div class="block-card">', unsafe_allow_html=True)
+c1, c2, c3 = st.columns([3, 2, 2])
 
-        if not is_blocked:
-            if st.button("Block User", key=f"block_{i}", use_container_width=True):
-                block_user(user_id, reason)
-                st.success(f"{email} blocked.")
-                st.rerun()
-        else:
-            if st.button("Unblock User", key=f"unblock_{i}", use_container_width=True):
-                unblock_user(user_id)
-                st.success(f"{email} unblocked.")
-                st.rerun()
+with c1:
+    st.markdown(f"### {name}")
+    st.write(f"**Email:** {email}")
+    st.write(f"**Age:** {age}")
 
-        if st.button("Mark as Paid", key=f"paid_{i}", use_container_width=True):
-            mark_paid(user_id)
-            st.success(f"{email} marked as paid.")
+with c2:
+    st.write(f"**Blocked:** {'Yes' if is_blocked else 'No'}")
+    st.write(f"**Payment Status:** {payment_status}")
+    st.write(f"**Trial Start:** {trial_start}")
+    st.write(f"**Trial End:** {trial_end}")
+
+with c3:
+    reason = st.text_input("Reason", value=block_reason, key="selected_reason")
+
+    if not is_blocked:
+        if st.button("Block User", key="selected_block", use_container_width=True):
+            block_user(user_id, reason)
+            st.success(f"{email} blocked.")
+            st.rerun()
+    else:
+        if st.button("Unblock User", key="selected_unblock", use_container_width=True):
+            unblock_user(user_id)
+            st.success(f"{email} unblocked.")
             st.rerun()
 
-        d1, d2 = st.columns(2)
-        with d1:
-            if st.button("14 Days", key=f"trial14_{i}", use_container_width=True):
-                reset_trial(user_id, 14)
-                st.success(f"14-day trial reset for {email}.")
-                st.rerun()
-        with d2:
-            if st.button("30 Days", key=f"trial30_{i}", use_container_width=True):
-                reset_trial(user_id, 30)
-                st.success(f"30-day trial reset for {email}.")
-                st.rerun()
+    if st.button("Mark as Paid", key="selected_paid", use_container_width=True):
+        mark_paid(user_id)
+        st.success(f"{email} marked as paid.")
+        st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    d1, d2 = st.columns(2)
+    with d1:
+        if st.button("14 Days", key="selected_trial14", use_container_width=True):
+            reset_trial(user_id, 14)
+            st.success(f"14-day trial reset for {email}.")
+            st.rerun()
+    with d2:
+        if st.button("30 Days", key="selected_trial30", use_container_width=True):
+            reset_trial(user_id, 30)
+            st.success(f"30-day trial reset for {email}.")
+            st.rerun()
+
+st.markdown("</div>", unsafe_allow_html=True)
