@@ -271,16 +271,16 @@ with col2:
         add_xp(5)
         st.switch_page("pages/5_Learn_Anything.py")
 
-    if st.button("📈 Progress", use_container_width=True):
-        st.switch_page("pages/5_Progress.py")
+    # if st.button("📈 Progress", use_container_width=True):
+        # st.switch_page("pages/5_Progress.py")
 
-    if st.button("🏆 Leaderboard", use_container_width=True):
-        st.switch_page("pages/6_Leaderboard.py")
+    # if st.button("🏆 Leaderboard", use_container_width=True):
+        # st.switch_page("pages/6_Leaderboard.py")
 
-with col3:
-    if st.button("🌍 Community", use_container_width=True):
-        add_xp(5)
-        st.switch_page("pages/7_Community.py")
+# with col3:
+    # if st.button("🌍 Community", use_container_width=True):
+        # add_xp(5)
+        # st.switch_page("pages/7_Community.py")
 
     if st.button("🧠 AI Coach", use_container_width=True):
         st.switch_page("pages/8_AI_Coach.py")
