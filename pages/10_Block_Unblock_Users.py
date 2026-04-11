@@ -73,7 +73,7 @@ def load_users():
     rows = (
         supabase.table("users")
         .select("*")
-        .order("email", desc=False)
+        .order("trial_start_date", desc=True)
         .execute()
         .data
         or []
