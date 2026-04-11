@@ -1,11 +1,11 @@
 import streamlit as st
 from datetime import date, datetime, timedelta
+import pandas as pd
 from db.supabase_client import supabase
 from core.block_access import (
     ADMIN_EMAIL,
     ensure_user_row,
     auto_expire_trial,
-    parse_date,
 )
 
 st.set_page_config(
@@ -43,9 +43,6 @@ if current_email != ADMIN_EMAIL.lower():
 
 ensure_user_row(current_user)
 
-# ===============================
-# SIDEBAR
-# ===============================
 with st.sidebar:
     st.markdown("## Chumcred Teens")
     st.caption(st.session_state.user.get("name", "Admin"))
@@ -55,7 +52,6 @@ with st.sidebar:
     st.page_link("pages/3_AI_Assistant.py", label="🤖 AI Assistant")
     st.page_link("pages/4_Projects.py", label="🛠 Projects")
     st.page_link("pages/5_Learn_Anything.py", label="🌍 Learn Anything")
-    st.page_link("pages/7_Community.py", label="🌍 Community")
     st.page_link("pages/8_AI_Coach.py", label="🧠 AI Coach")
     st.page_link("pages/9_Daily_Missions.py", label="🎯 Daily Missions")
     st.page_link("pages/9_Subscription.py", label="💳 Subscription")
@@ -70,7 +66,7 @@ with st.sidebar:
         st.session_state.just_logged_in = False
         st.switch_page("app.py")
 
-st.title("🚫 Block / Unblock Teens")
+st.title("🚫 Block / Unblock Users")
 st.caption(f"Admin: {current_email}")
 
 def load_users():
@@ -153,9 +149,27 @@ for row in users:
 
 st.write(f"Users found: **{len(filtered)}**")
 
-if not filtered:
+if filtered:
+    table_rows = []
+    for row in filtered:
+        table_rows.append({
+            "Name": row.get("name") or "No name",
+            "Email": row.get("email") or "No email",
+            "Age": row.get("age") or "N/A",
+            "Blocked": "Yes" if bool(row.get("is_blocked")) else "No",
+            "Payment Status": row.get("payment_status") or "trial",
+            "Trial Start": row.get("trial_start_date") or "N/A",
+            "Trial End": row.get("trial_end_date") or "N/A",
+            "Reason": row.get("block_reason") or "",
+        })
+
+    st.markdown("### 📋 All Signed-Up Users")
+    st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
+else:
     st.info("No users found.")
     st.stop()
+
+st.markdown("### Manage Individual Users")
 
 for i, row in enumerate(filtered):
     user_id = row.get("id")

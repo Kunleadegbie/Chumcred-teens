@@ -1,8 +1,32 @@
 import time
+from datetime import date, timedelta
 import streamlit as st
 from db.supabase_client import supabase
 
 ADMIN_EMAIL = "chumcred@gmail.com"
+
+
+def sync_user_to_public_users(user_id: str, email: str, full_name: str):
+    try:
+        trial_start = date.today()
+        trial_end = trial_start + timedelta(days=30)
+
+        supabase.table("users").upsert(
+            {
+                "id": user_id,
+                "email": email,
+                "name": full_name,
+                "age": None,
+                "is_blocked": False,
+                "payment_status": "trial",
+                "trial_start_date": trial_start.isoformat(),
+                "trial_end_date": trial_end.isoformat(),
+            },
+            on_conflict="id",
+        ).execute()
+        return True, None
+    except Exception as e:
+        return False, str(e)
 
 
 def signup_page():
@@ -83,6 +107,12 @@ def signup_page():
             if response.user:
                 st.session_state.signup_success = True
 
+                synced, sync_error = sync_user_to_public_users(
+                    response.user.id,
+                    email,
+                    full_name,
+                )
+
                 st.success("✅ Account created successfully!")
 
                 st.info(
@@ -92,6 +122,11 @@ def signup_page():
                 )
 
                 st.caption("If you don’t see the email, check your Spam or Promotions folder.")
+
+                if synced:
+                    st.caption("Your profile has been added to the admin user list.")
+                else:
+                    st.warning(f"Account created, but profile sync had an issue: {sync_error}")
             else:
                 st.session_state.signup_success = True
 
