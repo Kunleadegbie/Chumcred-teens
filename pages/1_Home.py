@@ -246,8 +246,8 @@ with c2:
     feature_card("Learn with AI", "Ask questions.", "🤖")
 with c3:
     feature_card("Build Projects", "Create things.", "💼")
-with c4:
-    feature_card("Track Progress", "Earn points.", "📈")
+# with c4:
+    # feature_card("Track Progress", "Earn points.", "📈")
 
 st.markdown("### ⚡ Quick Actions")
 
