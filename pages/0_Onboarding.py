@@ -28,6 +28,24 @@ try:
 except Exception:
     saved_profile = {}
 
+# Returning users should not repeat onboarding
+already_onboarded = all(
+    saved_profile.get(k) not in [None, ""]
+    for k in ["name", "age", "interest", "goal"]
+)
+if already_onboarded:
+    merged_user = dict(current_user)
+    for key in ["name", "age", "interest", "goal", "plan", "credits", "referral_code"]:
+        value = saved_profile.get(key)
+        if value not in [None, ""]:
+            merged_user[key] = value
+    st.session_state.user = merged_user
+    st.session_state.onboarded = True
+    if merged_user.get("id"):
+        st.session_state.user_id = merged_user["id"]
+    st.switch_page("pages/1_Home.py")
+    st.stop()
+
 default_name = (
     saved_profile.get("name")
     or current_user.get("name")
@@ -156,6 +174,12 @@ if st.button("Start My Journey 🚀", use_container_width=True):
 
     if updated_user.get("id"):
         st.session_state.user_id = updated_user["id"]
+
+    # Keep both standalone keys and user dict updated before syncing
+    st.session_state.name = updated_user.get("name")
+    st.session_state.age = updated_user.get("age")
+    st.session_state.interest = updated_user.get("interest")
+    st.session_state.goal = updated_user.get("goal")
 
     sync_profile_from_session()
 
